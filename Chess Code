@@ -1,0 +1,1084 @@
+import pygame
+
+pygame.init()
+
+# Set up the display
+win_size = width, height = 600, 600
+screen = pygame.display.set_mode(win_size)
+clock = pygame.time.Clock()
+
+#function that divides x by y and returns the greatest integer less than or equal to x/y
+def round_divide(x, y):
+  return int(x / y)
+
+"""
+The below classes of Pawn, Knight, Bishop, Rook, Queen, and King all have an initialization function with their coordinates on the chess board, their color (black or white), the image used for a piece based on its color, and the size of the piece. They also each have a function, make_image, that returns the image of the piece at the desired x and y coordinates. The rook and the king also have a variable that checks how many times they have moved in order to determine if castling is legal.
+"""
+
+class Pawn:
+  def __init__(self, color, x, y):
+    self.x = x
+    self.y = y
+    
+    self.color = color
+
+    if (color == "white"):
+      self.image = pygame.image.load("wpawn_.png")
+    else:
+      self.image = pygame.image.load("bpawn_.png")
+      
+    self.image = pygame.transform.scale(self.image, (70, 75))
+
+  def make_image(self):
+    screen.blit(self.image, (self.x, self.y))
+
+class Rook:
+  def __init__(self, color, x, y):
+    self.x = x
+    self.y = y
+    
+    self.color = color
+    
+    self.no_moves = 0
+
+    if (color == "white"):
+      self.image = pygame.image.load("wrook_.png")
+    else:
+      self.image = pygame.image.load("brook_.png")
+
+    self.image = pygame.transform.scale(self.image, (80, 80))
+    
+  def make_image(self):
+    screen.blit(self.image, (self.x, self.y))
+
+class Knight:
+  def __init__(self, color, x, y):
+    self.x = x
+    self.y = y
+
+    self.color = color
+
+    if (color == "white"):
+      self.image = pygame.image.load("wknight_.png")
+    else:
+      self.image = pygame.image.load("bknight_.png")
+
+    self.image = pygame.transform.scale(self.image, (80, 80))
+
+  def make_image(self):
+    screen.blit(self.image, (self.x, self.y))
+
+
+class Bishop:
+  
+  def __init__(self, color, x, y):
+    self.x = x
+    self.y = y
+
+    self.color = color
+
+    if (color == "white"):
+      self.image = pygame.image.load("wbishop_.png")
+    else:
+      self.image = pygame.image.load("bbishop_.png")
+
+    self.image = pygame.transform.scale(self.image, (75, 75))
+
+  def make_image(self):
+    screen.blit(self.image, (self.x, self.y))
+
+
+class King:
+  
+  def __init__(self, color, x, y):
+    self.x = x
+    self.y = y
+  
+    self.color = color
+    self.no_moves = 0
+
+    if (color == "white"):
+      self.image = pygame.image.load("wking_.png")
+    else:
+      self.image = pygame.image.load("bking_.png")
+
+    self.image = pygame.transform.scale(self.image, (75, 75))
+
+  def make_image(self):
+    screen.blit(self.image, (self.x, self.y))
+
+
+class Queen:
+
+  def __init__(self, color, x, y):
+    self.x = x
+    self.y = y
+  
+    self.color = color
+
+    if (color == "white"):
+      self.image = pygame.image.load("wqueen_.png")
+    else:
+      self.image = pygame.image.load("bqueen_.png")
+
+    self.image = pygame.transform.scale(self.image, (75, 75))
+
+  def make_image(self):
+    screen.blit(self.image, (self.x, self.y))
+
+#this class consists of the board and the pieces on it, as well as piece movement and practically anything that needs to be done with the board
+class Board:
+
+  def __init__(self):
+    #initializes whose turn it is, is changed as the game goes on
+    self.color = "white"
+
+    #used in the capture function, will see use later in code
+    self.capture_piece = None
+    self.captured_piece = None
+
+    
+    #declaring the pieces on the board at the start of the game
+    self.wp1 = Pawn("white", 0, 450)
+    self.wp2 = Pawn("white", 75, 450)
+    self.wp3 = Pawn("white", 150, 450)
+    self.wp4 = Pawn("white", 225, 450)
+    self.wp5 = Pawn("white", 300, 450)
+    self.wp6 = Pawn("white", 375, 450)
+    self.wp7 = Pawn("white", 450, 450)
+    self.wp8 = Pawn("white", 525, 450)
+
+    self.bp1 = Pawn("black", 0, 75)
+    self.bp2 = Pawn("black", 75, 75)
+    self.bp3 = Pawn("black", 150, 75)
+    self.bp4 = Pawn("black", 225, 75)
+    self.bp5 = Pawn("black", 300, 75)
+    self.bp6 = Pawn("black", 375, 75)
+    self.bp7 = Pawn("black", 450, 75)
+    self.bp8 = Pawn("black", 525, 75)
+
+    self.wr1 = Rook("white", 0, 525)
+    self.wr2 = Rook("white", 525, 525)
+
+    self.br1 = Rook("black", 0, 0)
+    self.br2 = Rook("black", 525, 0)
+
+    self.wn1 = Knight("white", 75, 525)
+    self.wn2 = Knight("white", 450, 525)
+
+    self.bn1 = Knight("black", 75, 0)
+    self.bn2 = Knight("black", 450, 0)
+
+    self.wb1 = Bishop("white", 150, 525)
+    self.wb2 = Bishop("white", 375, 525)
+
+    self.bb1 = Bishop("black", 150, 0)
+    self.bb2 = Bishop("black", 375, 0)
+
+    self.wq1 = Queen("white", 225, 525)
+    self.bq1 = Queen("black", 225, 0)
+
+    self.wk1 = King("white", 300, 525)
+    self.bk1 = King("black", 300, 0)
+
+    """
+    the following lists consist of the white pieces, black pieces, and all the pieces in
+    general.
+    """
+
+    self.WPIECE_LIST = [
+        self.wp1, self.wp2, self.wp3, self.wp4, self.wp5, self.wp6, self.wp7,
+        self.wp8, self.wr1, self.wr2, self.wn1, self.wn2, self.wb1, self.wb2,
+        self.wq1, self.wk1
+    ]
+
+    self.BPIECE_LIST = [
+        self.bp1, self.bp2, self.bp3, self.bp4, self.bp5, self.bp6, self.bp7,
+        self.bp8, self.br1, self.br2, self.bn1, self.bn2, self.bb1, self.bb2,
+        self.bq1, self.bk1
+    ]
+
+    self.PIECE_LIST = [
+        self.wp1, self.wp2, self.wp3, self.wp4, self.wp5, self.wp6, self.wp7,
+        self.wp8, self.wr1, self.wr2, self.wn1, self.wn2, self.wb1, self.wb2,
+        self.wq1, self.wk1, self.bp1, self.bp2, self.bp3, self.bp4, self.bp5,
+        self.bp6, self.bp7, self.bp8, self.br1, self.br2, self.bn1, self.bn2,
+        self.bb1, self.bb2, self.bq1, self.bk1
+    ]
+
+    """
+    the following lists consist of all the white pieces, classified by the type of piece
+    (e.g. pawn, bishop, etc.).
+    """
+
+    self.W_PAWN = [
+        self.wp1, self.wp2, self.wp3, self.wp4, self.wp5, self.wp6, self.wp7,
+        self.wp8
+    ]
+    self.W_ROOK = [self.wr1, self.wr2]
+    self.W_KNIGHT = [self.wn1, self.wn2]
+    self.W_BISHOP = [self.wb1, self.wb2]
+    self.W_QUEEN = [self.wq1]
+    self.W_KING = [self.wk1]
+
+    """
+    the following lists consist of all the black pieces, classified by the type of piece
+    (e.g. pawn, bishop, etc.).
+    """
+
+    self.B_PAWN = [
+        self.bp1, self.bp2, self.bp3, self.bp4, self.bp5, self.bp6, self.bp7,
+        self.bp8
+    ]
+    self.B_ROOK = [self.br1, self.br2]
+    self.B_KNIGHT = [self.bn1, self.bn2]
+    self.B_BISHOP = [self.bb1, self.bb2]
+    self.B_QUEEN = [self.bq1]
+    self.B_KING = [self.bk1]
+
+    """
+    the following lists consist of all the pieces, classified by the type of piece, 
+    regardless of color
+    """
+    
+    self.PAWN = [
+        self.wp1, self.wp2, self.wp3, self.wp4, self.wp5, self.wp6, self.wp7,
+        self.wp8, self.bp1, self.bp2, self.bp3, self.bp4, self.bp5, self.bp6,
+        self.bp7, self.bp8
+    ]
+    self.ROOK = [self.wr1, self.wr2, self.br1, self.br2]
+    self.KNIGHT = [self.wn1, self.wn2, self.bn1, self.bn2]
+    self.BISHOP = [self.wb1, self.wb2, self.bb1, self.bb2]
+    self.QUEEN = [self.wq1, self.bq1]
+    self.KING = [self.wk1, self.bk1]
+
+  
+  """
+  the following function is used to draw the board and the pieces on it whenever the x  
+  or y coordinates of a piece are changed
+  """
+  
+  def show_board(self):
+    self.image = pygame.image.load("board1.png")
+    self.image = pygame.transform.scale(self.image, (600, 600))
+    screen.blit(self.image, (0, 0))
+
+    self.wp1.make_image()
+    self.wp2.make_image()
+    self.wp3.make_image()
+    self.wp4.make_image()
+    self.wp5.make_image()
+    self.wp6.make_image()
+    self.wp7.make_image()
+    self.wp8.make_image()
+
+    self.bp1.make_image()
+    self.bp2.make_image()
+    self.bp3.make_image()
+    self.bp4.make_image()
+    self.bp5.make_image()
+    self.bp6.make_image()
+    self.bp7.make_image()
+    self.bp8.make_image()
+
+    self.wr1.make_image()
+    self.wr2.make_image()
+
+    self.br1.make_image()
+    self.br2.make_image()
+
+    self.wn1.make_image()
+    self.wn2.make_image()
+
+    self.bn1.make_image()
+    self.bn2.make_image()
+
+    self.wb1.make_image()
+    self.wb2.make_image()
+
+    self.bb1.make_image()
+    self.bb2.make_image()
+
+    self.wq1.make_image()
+    self.bq1.make_image()
+
+    self.wk1.make_image()
+    self.bk1.make_image()
+
+  """
+  The following few functions that end in ..._poss_moves returns the list of possible
+  places a piece could move, including captures, based on its type. For instance, 
+  pawn_poss_moves takes the input of a specific pawn and returns a list of all the 
+  possible places it could move.
+  """
+  
+  def pawn_poss_moves(self, pawn):
+    poss_list = []
+    in_front = False
+    double_in_front = False
+    l_capture = False
+    r_capture = False
+
+    if pawn.color == "white":
+
+      for i in self.PIECE_LIST:
+
+        if i.x == pawn.x and i.y == pawn.y - 75:
+          in_front = True
+        if i.x == pawn.x and i.y == pawn.y - 150:
+          double_in_front = True
+        if i in self.BPIECE_LIST and i.x == pawn.x + 75 and i.y == pawn.y - 75:
+          r_capture = True
+        if i in self.BPIECE_LIST and i.x == pawn.x - 75 and i.y == pawn.y - 75:
+          l_capture = True
+
+      if in_front == False:
+        poss_list.append((pawn.x, pawn.y - 75))
+      if double_in_front == False and pawn.y == 450:
+        poss_list.append((pawn.x, pawn.y - 150))
+      if l_capture:
+        poss_list.append((pawn.x - 75, pawn.y - 75))
+      if r_capture:
+        poss_list.append((pawn.x + 75, pawn.y - 75))
+
+    if pawn.color == "black":
+
+      for i in self.PIECE_LIST:
+
+        if i.x == pawn.x and i.y == pawn.y + 75:
+          in_front = True
+        if i.x == pawn.x and i.y == pawn.y + 150:
+          double_in_front = True
+        if i in self.WPIECE_LIST and i.x == pawn.x + 75 and i.y == pawn.y + 75:
+          r_capture = True
+        if i in self.WPIECE_LIST and i.x == pawn.x - 75 and i.y == pawn.y + 75:
+          l_capture = True
+
+      if in_front == False:
+        poss_list.append((pawn.x, pawn.y + 75))
+      if double_in_front == False and pawn.y == 75:
+        poss_list.append((pawn.x, pawn.y + 150))
+      if l_capture:
+        poss_list.append((pawn.x - 75, pawn.y + 75))
+      if r_capture:
+        poss_list.append((pawn.x + 75, pawn.y + 75))
+
+    return poss_list
+    
+
+  def bishop_poss_moves(self, bishop):
+    poss_list = []
+    loop_bool = True
+    x = bishop.x
+    y = bishop.y
+
+    while loop_bool and x <= 450 and y <= 450:
+      x += 75
+      y += 75
+      for i in self.PIECE_LIST:
+        if i.x == x and i.y == y:
+          loop_bool = False
+          if i.color != bishop.color:
+            poss_list.append((x, y))
+
+      if loop_bool:
+        poss_list.append((x, y))
+
+    x = bishop.x
+    y = bishop.y
+    loop_bool = True
+
+    while loop_bool and x >= 75 and y <= 450:
+      x -= 75
+      y += 75
+      for i in self.PIECE_LIST:
+        if i.x == x and i.y == y:
+          loop_bool = False
+          if i.color != bishop.color:
+            poss_list.append((x, y))
+
+      if loop_bool:
+        poss_list.append((x, y))
+
+    x = bishop.x
+    y = bishop.y
+    loop_bool = True
+
+    while loop_bool and x <= 450 and y >= 75:
+      x += 75
+      y -= 75
+      for i in self.PIECE_LIST:
+        if i.x == x and i.y == y:
+          loop_bool = False
+          if i.color != bishop.color:
+            poss_list.append((x, y))
+
+      if loop_bool:
+        poss_list.append((x, y))
+
+    x = bishop.x
+    y = bishop.y
+    loop_bool = True
+
+    while loop_bool and x >= 75 and y >= 75:
+      x -= 75
+      y -= 75
+
+      for i in self.PIECE_LIST:
+        if i.x == x and i.y == y:
+          loop_bool = False
+          if i.color != bishop.color:
+            poss_list.append((x, y))
+
+      if loop_bool:
+        poss_list.append((x, y))
+
+    # if self.color == "white":
+    #   tup = (self.bk1.x, self.bk1.y)
+    #   if (tup in poss_list):
+    #     poss_list.remove(tup)
+    # else:
+    #   tup = (self.wk1.x, self.wk1.y)
+    #   if (tup in poss_list):
+    #     poss_list.remove(tup)
+
+    return poss_list
+    
+
+  def rook_poss_moves(self, rook):
+    poss_list = []
+    loop_bool = True
+    x = rook.x
+    y = rook.y
+
+    while loop_bool and x <= 450:
+      x += 75
+      for i in self.PIECE_LIST:
+        if i.x == x and i.y == y:
+          loop_bool = False
+          if i.color != rook.color:
+            poss_list.append((x, y))
+
+      if loop_bool:
+        poss_list.append((x, y))
+
+    x = rook.x
+    y = rook.y
+    loop_bool = True
+
+    while loop_bool and x >= 75:
+      x -= 75
+      for i in self.PIECE_LIST:
+        if i.x == x and i.y == y:
+          loop_bool = False
+          if i.color != rook.color:
+            poss_list.append((x, y))
+
+      if loop_bool:
+        poss_list.append((x, y))
+
+    x = rook.x
+    y = rook.y
+    loop_bool = True
+
+    while loop_bool and y <= 450:
+      y += 75
+      for i in self.PIECE_LIST:
+        if i.x == x and i.y == y:
+          loop_bool = False
+          if i.color != rook.color:
+            poss_list.append((x, y))
+
+      if loop_bool:
+        poss_list.append((x, y))
+
+    x = rook.x
+    y = rook.y
+    loop_bool = True
+
+    while loop_bool and y >= 75:
+      y -= 75
+      for i in self.PIECE_LIST:
+        if i.x == x and i.y == y:
+          loop_bool = False
+          if i.color != rook.color:
+            poss_list.append((x, y))
+
+      if loop_bool:
+        poss_list.append((x, y))
+
+    return poss_list
+    
+
+  def queen_poss_moves(self, queen):
+    poss_list1 = self.rook_poss_moves(queen)
+    poss_list2 = self.bishop_poss_moves(queen)
+
+    poss_list = poss_list1 + poss_list2
+    return poss_list
+
+  def king_poss_moves(self, king):
+    poss_list = []
+    x = king.x
+    y = king.y
+
+    above = True
+    r_above = True
+    l_above = True
+    right = True
+    left = True
+    bottom = True
+    r_bottom = True
+    l_bottom = True
+
+    for i in self.PIECE_LIST:
+      if (i.x == x + 75 and i.y == y + 75
+          and i.color == king.color) or (x + 75 > 525 or y + 75 > 525):
+        r_bottom = False
+      if (i.x == x + 75 and i.y == y - 75
+          and i.color == king.color) or (x + 75 > 525 or y - 75 < 0):
+        r_above = False
+      if (i.x == x + 75 and i.y == y
+          and i.color == king.color) or (x + 75 > 525 or y > 525):
+        right = False
+      if (i.x == x and i.y == y - 75
+          and i.color == king.color) or (x > 525 or y - 75 < 0):
+        above = False
+      if (i.x == x and i.y == y + 75
+          and i.color == king.color) or (x > 525 or y + 75 > 525):
+        bottom = False
+      if (i.x == x - 75 and i.y == y
+          and i.color == king.color) or (x - 75 < 0 or y + 75 > 525):
+        left = False
+      if (i.x == x - 75 and i.y == y - 75
+          and i.color == king.color) or (x - 75 < 0 or y - 75 < 0):
+        l_above = False
+      if (i.x == x - 75 and i.y == y + 75
+          and i.color == king.color) or (x - 75 < 0 or y + 75 > 525):
+        l_bottom = False
+
+    if r_bottom:
+      poss_list.append((x + 75, y + 75))
+    if r_above:
+      poss_list.append((x + 75, y - 75))
+    if right:
+      poss_list.append((x + 75, y))
+    if left:
+      poss_list.append((x - 75, y))
+    if l_above:
+      poss_list.append((x - 75, y - 75))
+    if l_bottom:
+      poss_list.append((x - 75, y + 75))
+    if above:
+      poss_list.append((x, y - 75))
+    if bottom:
+      poss_list.append((x, y + 75))
+
+    return poss_list
+    
+
+  def knight_poss_moves(self, knight):
+    poss_list = []
+    x = knight.x
+    y = knight.y
+
+    r2u1 = True
+    r1u2 = True
+    l2u1 = True
+    l1u2 = True
+    r2d1 = True
+    r1d2 = True
+    l2d1 = True
+    l1d2 = True
+
+    for i in self.PIECE_LIST:
+      if i.x == x + 75 and i.y == y + 150 and i.color == knight.color:
+        r1d2 = False
+      if i.x == x + 75 and i.y == y - 150 and i.color == knight.color:
+        r1u2 = False
+      if i.x == x - 75 and i.y == y + 150 and i.color == knight.color:
+        l1d2 = False
+      if i.x == x - 75 and i.y == y - 150 and i.color == knight.color:
+        l1u2 = False
+      if i.x == x + 150 and i.y == y + 75 and i.color == knight.color:
+        r2d1 = False
+      if i.x == x - 150 and i.y == y + 75 and i.color == knight.color:
+        l2d1 = False
+      if i.x == x + 150 and i.y == y - 75 and i.color == knight.color:
+        r2u1 = False
+      if i.x == x - 150 and i.y == y - 75 and i.color == knight.color:
+        l2u1 = False
+
+    if r1d2 and x + 75 <= 525 and y + 150 <= 525:
+      poss_list.append((x + 75, y + 150))
+    if r1u2 and x + 75 <= 525 and y - 150 >= 0:
+      poss_list.append((x + 75, y - 150))
+    if l1d2 and x - 75 >= 0 and y + 150 <= 525:
+      poss_list.append((x - 75, y + 150))
+    if l1u2 and x - 75 >= 0 and y - 150 >= 0:
+      poss_list.append((x - 75, y - 150))
+    if r2d1 and x + 150 <= 525 and y + 75 <= 525:
+      poss_list.append((x + 150, y + 75))
+    if r2u1 and x + 150 <= 525 and y - 75 >= 0:
+      poss_list.append((x + 150, y - 75))
+    if l2d1 and x - 150 >= 0 and y + 75 <= 525:
+      poss_list.append((x - 150, y + 75))
+    if l2u1 and x - 150 >= 0 and y - 75 >= 0:
+      poss_list.append((x - 150, y - 75))
+
+    return poss_list
+    
+  """
+  the following function changes whose turn it is when called upon.
+  """
+  
+  def change_move(self):
+    if (self.color == "white"):
+      self.color = "black"
+    else:
+      self.color = "white"
+
+  """
+  the following function carries out any captures that are possible on the board after 
+  pieces are moved, as there are overlapping pieces on the board when they are initially 
+  captured. 
+  """
+  
+  def capture(self):
+    for i in self.WPIECE_LIST:
+      for j in self.BPIECE_LIST:
+        if (i.x == j.x and i.y == j.y):
+          if self.color == "white":
+            i.x = -1000
+            i.y = -1000
+            self.capture_piece = j
+            self.captured_piece = i
+          else:
+            j.x = -1000
+            j.y = -1000
+            self.capture_piece = i
+            self.captured_piece = j
+
+  """
+  the following code checks if a user's move is legal based on the piece they are trying to move
+  and the coordinates they are trying to move it to. an illegal move is a move in which the user
+  tries to move another piece while their king is under attack, or if the user moves a particular 
+  piece in a way it should not be able to be moved. However, there are a couple of cases where 
+  this function counts certain moves as illegal when it should be legal, which is fixed by the 
+  next function.
+  """
+  
+  def check_legal_without_capture(self, moved_piece, new_x, new_y):
+    bool1 = True
+    og_x = moved_piece.x
+    og_y = moved_piece.y
+    moved_piece.x = new_x
+    moved_piece.y = new_y
+
+    if (self.color == "white"):
+      wking_tup = (self.wk1.x, self.wk1.y)
+
+      for i in self.B_PAWN:
+        if wking_tup in self.pawn_poss_moves(i):
+          bool1 = False
+      for i in self.B_ROOK:
+        if wking_tup in self.rook_poss_moves(i):
+          bool1 = False
+      for i in self.B_KNIGHT:
+        if wking_tup in self.knight_poss_moves(i):
+          bool1 = False
+      for i in self.B_BISHOP:
+        if wking_tup in self.bishop_poss_moves(i):
+          bool1 = False
+      for i in self.B_QUEEN:
+        if wking_tup in self.queen_poss_moves(i):
+          bool1 = False
+      for i in self.B_KING:
+        if wking_tup in self.king_poss_moves(i):
+          bool1 = False
+
+    if (self.color == "black"):
+      bking_tup = (self.bk1.x, self.bk1.y)
+
+      for i in self.W_PAWN:
+        if bking_tup in self.pawn_poss_moves(i):
+          bool1 = False
+      for i in self.W_ROOK:
+        if bking_tup in self.rook_poss_moves(i):
+          bool1 = False
+      for i in self.W_KNIGHT:
+        if bking_tup in self.knight_poss_moves(i):
+          bool1 = False
+      for i in self.W_BISHOP:
+        if bking_tup in self.bishop_poss_moves(i):
+          bool1 = False
+      for i in self.W_QUEEN:
+        if bking_tup in self.queen_poss_moves(i):
+          bool1 = False
+      for i in self.W_KING:
+        if bking_tup in self.king_poss_moves(i):
+          bool1 = False
+
+    moved_piece.x = og_x
+    moved_piece.y = og_y
+
+    return bool1
+
+  """
+  the following function is what counts illegal moves properly. Note that this was created 
+  different from the function above so that the above function could actually be used in this 
+  function itself, removing code redundancy.
+  """
+
+  def check_legal(self, moved_piece, new_x, new_y):
+
+    og_x = moved_piece.x
+    og_y = moved_piece.y
+    moved_piece.x = new_x
+    moved_piece.y = new_y
+
+    bool1 = self.check_legal_without_capture(moved_piece, new_x, new_y)
+    
+    if not bool1:
+      for i in self.PIECE_LIST:
+        if i.x == new_x and i.y == new_y and i != moved_piece and i.color != moved_piece.color:
+          og_x2 = i.x
+          og_y2 = i.y
+
+          i.x = -1000
+          i.y = -1000
+
+          bool1 = self.check_legal_without_capture(moved_piece, new_x, new_y)
+          
+          i.x = og_x2
+          i.y = og_y2
+          
+          break
+
+    moved_piece.x = og_x
+    moved_piece.y = og_y
+
+    return bool1
+
+  """
+  This function checks if a move is legal, and if it is, it moves the piece to the new 
+  coordinates. This is needed seperate from the function above because this actually moves the 
+  pieces, whereas the function above only returns a boolean value (which is crucial to other 
+  parts of the code).
+  """
+
+  def check_legal_and_move(self, moved_piece, new_x, new_y):
+
+    bool1 = self.check_legal(moved_piece, new_x, new_y)
+    og_x = moved_piece.x
+    og_y = moved_piece.y
+    moved_piece.x = new_x
+    moved_piece.y = new_y
+
+    if bool1 == False:
+      moved_piece.x = og_x
+      moved_piece.y = og_y
+    else:
+      self.change_move()
+
+    return bool1
+    
+
+  """
+  The following two functions work together to determine whether or not a user is in checkmate 
+  after a move is made.
+  """
+
+  def check_checkmate_without_king(self):
+    bool = True
+
+    for i in self.PIECE_LIST:
+
+      if i in self.PAWN and i.color == self.color:
+        for j in self.pawn_poss_moves(i):
+          if self.check_legal(i, j[0], j[1]):
+            bool = False
+
+      elif i in self.ROOK and i.color == self.color:
+        for j in self.rook_poss_moves(i):
+          if self.check_legal(i, j[0], j[1]):
+            bool = False
+
+      elif i in self.KNIGHT and i.color == self.color:
+        for j in self.knight_poss_moves(i):
+          if self.check_legal(i, j[0], j[1]):
+            bool = False
+
+      elif i in self.BISHOP and i.color == self.color:
+        for j in self.bishop_poss_moves(i):
+          if self.check_legal(i, j[0], j[1]):
+            bool = False
+
+      elif i in self.QUEEN and i.color == self.color:
+        for j in self.queen_poss_moves(i):
+          if self.check_legal(i, j[0], j[1]):
+            bool = False
+
+    return bool
+
+
+  def check_checkmate(self):
+
+    orig_bool = self.check_checkmate_without_king()
+
+    if orig_bool:
+      for i in self.PIECE_LIST:
+        if i in self.KING and i.color == self.color:
+          for j in self.king_poss_moves(i):
+            if self.check_legal(i, j[0], j[1]):
+              piece_or_not = False
+
+              piece = i
+
+              for k in self.PIECE_LIST:
+                if k.x == j[0] and k.y == j[1]:
+                  piece_or_not = True
+                  piece = k
+
+              if piece_or_not == False:
+                orig_bool = False
+              else:
+                k_x = piece.x
+                k_y = piece.y
+                k.x = -1000
+                k.y = -1000
+
+                for x in self.PIECE_LIST:
+                  if not self.check_legal(x, k_x, k_y):
+                    orig_bool = False
+
+    return orig_bool
+
+
+#the board is created
+b1 = Board()
+
+#the following gives user instructions
+print("Welcome to chess! In order to make a move, click on a piece and click on the square you would like to move it to - it will only move there if it is a legal move (in other words, your king is not in check at the end of the move and the piece actually has the ability to move there). Alternate the turns between white and black. The game is over when it ends in checkmate. Good luck!, and have fun!")
+
+#the screen is created, the while loop is started
+screen.fill((0, 0, 0))
+b1.show_board()
+running = False
+while not running:
+
+  """
+  at the beginning of each move, any overlapping pieces that result from the previous move are 
+  modified such that one piece captures another.
+  """
+  b1.capture()
+
+  #the board is displayed at the start of each turn
+  b1.show_board()
+
+  #checks if a user has some sort of an action
+  for event in pygame.event.get():
+    if event.type == pygame.QUIT:
+      running = True
+    elif event.type == pygame.MOUSEBUTTONDOWN:
+      pos = pygame.mouse.get_pos()
+
+      """
+      the following code checks if a piece has actually been chosen, and assigns this piece to a 
+      variable i if it has been chosen
+      """
+      
+      for i in b1.PIECE_LIST:
+        if (i.x <= pos[0] and i.x + 75 > pos[0] and i.y <= pos[1]
+            and i.y + 75 > pos[1] and i.color == b1.color):
+          exit = True
+
+          #this code checks for a second user input: where the user wants to move the piece
+          while (exit):
+            for event2 in pygame.event.get():
+              if event2.type == pygame.MOUSEBUTTONDOWN:
+                exit = False
+                pos2 = pygame.mouse.get_pos()
+
+                """
+                the following two variables allow the x and y values the user clicked on on the 
+                board to be multiples of 75, which is the basis of this entire coordinate system, 
+                where all x and y coordinates of pieces are multiples of 75.
+                """
+                round_x = round_divide(pos2[0], 75) * 75
+                round_y = round_divide(pos2[1], 75) * 75
+
+                #the coordinates where the user wants the piece to move is stored in a tuple
+                coords = (round_x, round_y)
+
+                """
+                checks if the object that needs to be moved is a pawn, if moving it to the 
+                coordinates is legal, and moves the pawn to the new coordinates
+                """
+                if i in b1.PAWN:
+                  if coords in b1.pawn_poss_moves(i):
+                    b1.check_legal_and_move(i, round_x, round_y)
+                    
+                """
+                checks if the object that needs to be moved is a rook, if moving it to the 
+                coordinates is legal, and moves the rook to the new coordinates
+                """
+                if i in b1.ROOK:
+                  if coords in b1.rook_poss_moves(i):
+                    b1.check_legal_and_move(i, round_x, round_y)
+                    i.no_moves += 1
+
+                """
+                checks if the object that needs to be moved is a knight, if moving it to the 
+                coordinates is legal, and moves the knight to the new coordinates
+                """
+                if i in b1.KNIGHT:
+                  if coords in b1.knight_poss_moves(i):
+                    b1.check_legal_and_move(i, round_x, round_y)
+
+                """
+                checks if the object that needs to be moved is a knight, if moving it to the 
+                coordinates is legal, and moves the knight to the new coordinates
+                """
+                if i in b1.BISHOP:
+                  if coords in b1.bishop_poss_moves(i):
+                    b1.check_legal_and_move(i, round_x, round_y)
+
+                """
+                checks if the object that needs to be moved is a knight, if moving it to the 
+                coordinates is legal, and moves the knight to the new coordinates
+                """
+                if i in b1.QUEEN:
+                  if coords in b1.queen_poss_moves(i):
+                    b1.check_legal_and_move(i, round_x, round_y)
+
+                """
+                checks if the object that needs to be moved is a knight, if moving it to the 
+                coordinates is legal, and moves the knight to the new coordinates
+                """
+                if i in b1.KING:
+                  og_color = b1.color
+                  if coords in b1.king_poss_moves(i):
+                    b1.check_legal_and_move(i, round_x, round_y)
+                    i.no_moves += 1
+                                      
+                  #the following elif statements allow the user to castle
+                  elif b1.color == "white" and i.color == "white" and i.no_moves == 0:
+                    if round_x == 450 and round_y == i.y and b1.wr2.no_moves == 0:
+                      no_pieces_between = 0
+                      no_checks_between = 0
+
+                      for j in b1.PIECE_LIST:
+                        if j.x <= 450 and j.x > i.x and j.y == i.y and j != i:
+                          no_pieces_between += 1
+                          if j.color == "black":
+                            if not j.check_legal(j, 300, 525) or not j.check_legal(j, 375, 525) or not j.check_legal(450, 525):
+                              no_checks_between += 1
+
+                      if no_pieces_between == 0 and no_checks_between == 0:
+                        i.x = 450
+                        b1.wr2.x = 375
+                        b1.wr2.no_moves += 1
+                        i.no_moves += 1
+                        
+                    elif round_x == 150 and round_y == i.y and b1.wr1.no_moves == 0:
+                      no_pieces_between = 0
+                      no_checks_between = 0
+  
+                      for j in b1.PIECE_LIST:
+                        if j.x <= 300 and j.x >= 150 and j.y == i.y and j != i:
+                          no_pieces_between += 1
+                          if j.color == "black":
+                            if not j.check_legal(j, 150, 525) or not j.check_legal(j, 225, 525) or not j.check_legal(300, 525):
+                              no_checks_between += 1
+                              
+  
+                      if no_pieces_between == 0 and no_checks_between == 0:
+                        i.x = 150
+                        b1.wr1.x = 225
+                        b1.wr1.no_moves += 1
+                        i.no_moves += 1
+                        
+                        if og_color == "white":
+                          b1.color = "black"
+                        else:
+                          b1.color == "black"
+
+                  elif b1.color == "black" and i.color == "black" and i.no_moves == 0:
+                    if round_x == 450 and round_y == i.y and b1.br2.no_moves == 0:
+                      no_pieces_between = 0
+                      no_checks_between = 0
+  
+                      for j in b1.PIECE_LIST:
+                        if j.x <= 450 and j.x > i.x and j.y == i.y and j != i:
+                          no_pieces_between += 1
+                          if j.color == "white":
+                            if not j.check_legal(j, 300, 0) or not j.check_legal(j, 375, 0) or not j.check_legal(450, 0):
+                              no_checks_between += 1
+  
+                      if no_pieces_between == 0 and no_checks_between == 0:
+                        i.x = 450
+                        b1.br2.x = 375
+                        b1.br2.no_moves += 1
+                        i.no_moves += 1
+  
+                    elif round_x == 150 and round_y == i.y and b1.br1.no_moves == 0:
+                      no_pieces_between = 0
+                      no_checks_between = 0
+  
+                      for j in b1.PIECE_LIST:
+                        if j.x <= 300 and j.x >= 150 and j.y == i.y and j != i:
+                          no_pieces_between += 1
+                          if j.color == "white":
+                            if not j.check_legal(j, 150, 0) or not j.check_legal(j, 225, 0) or not j.check_legal(300, 0):
+                              no_checks_between += 1
+
+
+                      if no_pieces_between == 0 and no_checks_between == 0:
+                        i.x = 150
+                        b1.br1.x = 225
+                        b1.br1.no_moves += 1
+                        i.no_moves += 1
+
+                        if og_color == "white":
+                          b1.color = "black"
+                        else:
+                          b1.color == "black"
+
+                  
+                        
+                #the board is displayed
+                b1.show_board()
+                
+                #checks if it is checkmate
+                if b1.check_checkmate():
+                  
+                  #breaks the while loop
+                  running = True
+                  
+                  #displays whether black or white has won the game
+                  if b1.color == "white":
+                    text_part1 = "Black has won"
+                    text_part2 = "by checkmate."
+                  else:
+                    text_part1 = "White has won"
+                    text_part2 = "by checkmate."
+                  
+                  white = (255, 255, 255)
+                  font = pygame.font.Font(None, 36)
+
+                  text_surface1 = font.render(text_part1, True, white)
+                  text_surface2 = font.render(text_part2, True, white)
+
+                  text_rect1 = text_surface1.get_rect()
+                  text_rect2 = text_surface2.get_rect()
+
+                  text_rect1.center = (600 // 2, 600 // 2)
+                  text_rect2.center = (600 // 2, 600 // 2 + 40)
+
+                  screen.fill((0, 0, 0))
+                  screen.blit(text_surface1, text_rect1)
+                  screen.blit(text_surface2, text_rect2)
+                  
+
+  pygame.display.flip()
