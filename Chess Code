@@ -136,7 +136,7 @@ class Board:
     #used in the capture function, will see use later in code
     self.capture_piece = None
     self.captured_piece = None
-
+    self.no_promotion = 0
     
     #declaring the pieces on the board at the start of the game
     self.wp1 = Pawn("white", 0, 450)
@@ -180,6 +180,80 @@ class Board:
 
     self.wk1 = King("white", 300, 525)
     self.bk1 = King("black", 300, 0)
+
+    self.wpq1 = Queen("white", -1000, -1000)
+    self.wpq2 = Queen("white", -1000, -1000)
+    self.wpq3 = Queen("white", -1000, -1000)
+    self.wpq4 = Queen("white", -1000, -1000)
+    self.wpq5 = Queen("white", -1000, -1000)
+    self.wpq6 = Queen("white", -1000, -1000)
+    self.wpq7 = Queen("white", -1000, -1000)
+    self.wpq8 = Queen("white", -1000, -1000)
+
+    self.wpr1 = Rook("white", -1000, -1000)
+    self.wpr2 = Rook("white", -1000, -1000)
+    self.wpr3 = Rook("white", -1000, -1000)
+    self.wpr4 = Rook("white", -1000, -1000)
+    self.wpr5 = Rook("white", -1000, -1000)
+    self.wpr6 = Rook("white", -1000, -1000)
+    self.wpr7 = Rook("white", -1000, -1000)
+    self.wpr8 = Rook("white", -1000, -1000)
+
+    self.wpk1 = Knight("white", -1000, -1000)
+    self.wpk2 = Knight("white", -1000, -1000) 
+    self.wpk3 = Knight("white", -1000, -1000)
+    self.wpk4 = Knight("white", -1000, -1000)
+    self.wpk5 = Knight("white", -1000, -1000)
+    self.wpk6 = Knight("white", -1000, -1000)
+    self.wpk7 = Knight("white", -1000, -1000)
+    self.wpk8 = Knight("white", -1000, -1000)
+
+    self.wpb1 = Bishop("white", -1000, -1000)
+    self.wpb2 = Bishop("white", -1000, -1000)
+    self.wpb3 = Bishop("white", -1000, -1000)
+    self.wpb4 = Bishop("white", -1000, -1000)
+    self.wpb5 = Bishop("white", -1000, -1000)
+    self.wpb6 = Bishop("white", -1000, -1000)
+    self.wpb7 = Bishop("white", -1000, -1000)
+    self.wpb8 = Bishop("white", -1000, -1000)
+
+    
+    self.bpq1 = Queen("black", -1000, -1000)
+    self.bpq2 = Queen("black", -1000, -1000)
+    self.bpq3 = Queen("black", -1000, -1000)
+    self.bpq4 = Queen("black", -1000, -1000)
+    self.bpq5 = Queen("black", -1000, -1000)
+    self.bpq6 = Queen("black", -1000, -1000)
+    self.bpq7 = Queen("black", -1000, -1000)
+    self.bpq8 = Queen("black", -1000, -1000)
+
+    self.bpr1 = Rook("black", -1000, -1000)
+    self.bpr2 = Rook("black", -1000, -1000)
+    self.bpr3 = Rook("black", -1000, -1000)
+    self.bpr4 = Rook("black", -1000, -1000)
+    self.bpr5 = Rook("black", -1000, -1000)
+    self.bpr6 = Rook("black", -1000, -1000)
+    self.bpr7 = Rook("black", -1000, -1000)
+    self.bpr8 = Rook("black", -1000, -1000)
+
+    self.bpk1 = Knight("black", -1000, -1000)
+    self.bpk2 = Knight("black", -1000, -1000) 
+    self.bpk3 = Knight("black", -1000, -1000)
+    self.bpk4 = Knight("black", -1000, -1000)
+    self.bpk5 = Knight("black", -1000, -1000)
+    self.bpk6 = Knight("black", -1000, -1000)
+    self.bpk7 = Knight("black", -1000, -1000)
+    self.bpk8 = Knight("black", -1000, -1000)
+
+    self.bpb1 = Bishop("black", -1000, -1000)
+    self.bpb2 = Bishop("black", -1000, -1000)
+    self.bpb3 = Bishop("black", -1000, -1000)
+    self.bpb4 = Bishop("black", -1000, -1000)
+    self.bpb5 = Bishop("black", -1000, -1000)
+    self.bpb6 = Bishop("black", -1000, -1000)
+    self.bpb7 = Bishop("black", -1000, -1000)
+    self.bpb8 = Bishop("black", -1000, -1000)
+
 
     """
     the following lists consist of the white pieces, black pieces, and all the pieces in
@@ -252,6 +326,38 @@ class Board:
     self.QUEEN = [self.wq1, self.bq1]
     self.KING = [self.wk1, self.bk1]
 
+
+    self.WQUEEN_PROMOTE_PIECES = [
+      self.wpq1, self.wpq2, self.wpq3, self.wpq4, self.wpq5, self.wpq6, self.wpq7, self.wpq8, 
+    ]
+  
+    self.WROOK_PROMOTE_PIECES = [
+      self.wpr1, self.wpr2, self.wpr3, self.wpr4, self.wpr5, self.wpr6, self.wpr7, self.wpr8, 
+    ]
+  
+    self.WBISHOP_PROMOTE_PIECES = [
+      self.wpb1, self.wpb2, self.wpb3, self.wpb4, self.wpb5, self.wpb6, self.wpb7, self.wpb8, 
+    ]
+  
+    self.WKNIGHT_PROMOTE_PIECES = [
+      self.wpk1, self.wpk2, self.wpk3, self.wpk4, self.wpk5, self.wpk6, self.wpk7, self.wpk8, 
+    ]
+  
+    self.BQUEEN_PROMOTE_PIECES = [
+      self.bpq1, self.bpq2, self.bpq3, self.bpq4, self.bpq5, self.bpq6, self.bpq7, self.bpq8, 
+    ]
+  
+    self.BROOK_PROMOTE_PIECES = [
+      self.bpr1, self.bpr2, self.bpr3, self.bpr4, self.bpr5, self.bpr6, self.bpr7, self.bpr8, 
+    ]
+  
+    self.BBISHOP_PROMOTE_PIECES = [
+      self.bpb1, self.bpb2, self.bpb3, self.bpb4, self.bpb5, self.bpb6, self.bpb7, self.bpb8, 
+    ]
+  
+    self.BKNIGHT_PROMOTE_PIECES = [
+      self.bpk1, self.bpk2, self.bpk3, self.bpk4, self.bpk5, self.bpk6, self.bpk7, self.bpk8, 
+    ]
   
   """
   the following function is used to draw the board and the pieces on it whenever the x  
@@ -263,47 +369,8 @@ class Board:
     self.image = pygame.transform.scale(self.image, (600, 600))
     screen.blit(self.image, (0, 0))
 
-    self.wp1.make_image()
-    self.wp2.make_image()
-    self.wp3.make_image()
-    self.wp4.make_image()
-    self.wp5.make_image()
-    self.wp6.make_image()
-    self.wp7.make_image()
-    self.wp8.make_image()
-
-    self.bp1.make_image()
-    self.bp2.make_image()
-    self.bp3.make_image()
-    self.bp4.make_image()
-    self.bp5.make_image()
-    self.bp6.make_image()
-    self.bp7.make_image()
-    self.bp8.make_image()
-
-    self.wr1.make_image()
-    self.wr2.make_image()
-
-    self.br1.make_image()
-    self.br2.make_image()
-
-    self.wn1.make_image()
-    self.wn2.make_image()
-
-    self.bn1.make_image()
-    self.bn2.make_image()
-
-    self.wb1.make_image()
-    self.wb2.make_image()
-
-    self.bb1.make_image()
-    self.bb2.make_image()
-
-    self.wq1.make_image()
-    self.bq1.make_image()
-
-    self.wk1.make_image()
-    self.bk1.make_image()
+    for moved_piece in self.PIECE_LIST:
+      moved_piece.make_image()
 
   """
   The following few functions that end in ..._poss_moves returns the list of possible
@@ -432,15 +499,6 @@ class Board:
 
       if loop_bool:
         poss_list.append((x, y))
-
-    # if self.color == "white":
-    #   tup = (self.bk1.x, self.bk1.y)
-    #   if (tup in poss_list):
-    #     poss_list.remove(tup)
-    # else:
-    #   tup = (self.wk1.x, self.wk1.y)
-    #   if (tup in poss_list):
-    #     poss_list.remove(tup)
 
     return poss_list
     
@@ -855,6 +913,109 @@ class Board:
     return orig_bool
 
 
+  def promotion(self, moved_piece, new_x, new_y, new_piece):
+      
+    if(moved_piece.color == "white"):
+
+      if new_piece == "Queen" or new_piece == "queen" or new_piece == "Q" or new_piece == "q":
+        
+        self.WQUEEN_PROMOTE_PIECES[self.no_promotion].x = new_x
+        self.WQUEEN_PROMOTE_PIECES[self.no_promotion].y = new_y
+        self.W_QUEEN.append(self.WQUEEN_PROMOTE_PIECES[self.no_promotion])
+        self.QUEEN.append(self.WQUEEN_PROMOTE_PIECES[self.no_promotion])
+        self.WPIECE_LIST.append(self.WQUEEN_PROMOTE_PIECES[self.no_promotion])
+        self.PIECE_LIST.append(self.WQUEEN_PROMOTE_PIECES[self.no_promotion])
+        moved_piece.x = -1000
+        moved_piece.y = -1000
+        self.no_promotion += 1
+        
+      elif new_piece == "Knight" or new_piece == "knight" or new_piece == "K" or new_piece == "k" or new_piece == "Night" or new_piece == "night":
+        
+        self.WKNIGHT_PROMOTE_PIECES[self.no_promotion].x = new_x
+        self.WKNIGHT_PROMOTE_PIECES[self.no_promotion].y = new_y
+        self.W_KNIGHT.append(self.WKNIGHT_PROMOTE_PIECES[self.no_promotion])
+        self.KNIGHT.append(self.WKNIGHT_PROMOTE_PIECES[self.no_promotion])
+        self.WPIECE_LIST.append(self.WKNIGHT_PROMOTE_PIECES[self.no_promotion])
+        self.PIECE_LIST.append(self.WKNIGHT_PROMOTE_PIECES[self.no_promotion])
+        moved_piece.x = -1000
+        moved_piece.y = -1000
+        self.no_promotion += 1
+        
+      elif new_piece == "Bishop" or new_piece == "bishop" or new_piece == "B" or new_piece == "b":
+        
+        self.WBISHOP_PROMOTE_PIECES[self.no_promotion].x = new_x
+        self.WBISHOP_PROMOTE_PIECES[self.no_promotion].y = new_y
+        self.W_BISHOP.append(self.WBISHOP_PROMOTE_PIECES[self.no_promotion])
+        self.BISHOP.append(self.WBISHOP_PROMOTE_PIECES[self.no_promotion])
+        self.WPIECE_LIST.append(self.WBISHOP_PROMOTE_PIECES[self.no_promotion])
+        self.PIECE_LIST.append(self.WBISHOP_PROMOTE_PIECES[self.no_promotion])
+        moved_piece.x = -1000
+        moved_piece.y = -1000
+        self.no_promotion += 1
+        
+      elif new_piece == "Rook" or new_piece == "rook" or new_piece == "R" or new_piece == "r":
+        
+        self.WROOK_PROMOTE_PIECES[self.no_promotion].x = new_x
+        self.WROOK_PROMOTE_PIECES[self.no_promotion].y = new_y
+        self.W_ROOK.append(self.WROOK_PROMOTE_PIECES[self.no_promotion])
+        self.ROOK.append(self.WROOK_PROMOTE_PIECES[self.no_promotion])
+        self.WPIECE_LIST.append(self.WROOK_PROMOTE_PIECES[self.no_promotion])
+        self.PIECE_LIST.append(self.WROOK_PROMOTE_PIECES[self.no_promotion])
+        moved_piece.x = -1000
+        moved_piece.y = -1000
+        self.no_promotion += 1
+
+    elif(moved_piece.color == "black"):
+
+      if new_piece == "Queen" or new_piece == "queen" or new_piece == "Q" or new_piece == "q":
+  
+        self.BQUEEN_PROMOTE_PIECES[self.no_promotion].x = new_x
+        self.BQUEEN_PROMOTE_PIECES[self.no_promotion].y = new_y
+        self.B_QUEEN.append(self.BQUEEN_PROMOTE_PIECES[self.no_promotion])
+        self.QUEEN.append(self.BQUEEN_PROMOTE_PIECES[self.no_promotion])
+        self.BPIECE_LIST.append(self.BQUEEN_PROMOTE_PIECES[self.no_promotion])
+        self.PIECE_LIST.append(self.BQUEEN_PROMOTE_PIECES[self.no_promotion])
+        moved_piece.x = -1000
+        moved_piece.y = -1000
+        self.no_promotion += 1
+  
+      elif new_piece == "Knight" or new_piece == "knight" or new_piece == "K" or new_piece == "k" or new_piece == "Night" or new_piece == "night":
+  
+        self.BKNIGHT_PROMOTE_PIECES[self.no_promotion].x = new_x
+        self.BKNIGHT_PROMOTE_PIECES[self.no_promotion].y = new_y
+        self.B_KNIGHT.append(self.BKNIGHT_PROMOTE_PIECES[self.no_promotion])
+        self.KNIGHT.append(self.BKNIGHT_PROMOTE_PIECES[self.no_promotion])
+        self.BPIECE_LIST.append(self.BKNIGHT_PROMOTE_PIECES[self.no_promotion])
+        self.PIECE_LIST.append(self.BKNIGHT_PROMOTE_PIECES[self.no_promotion])
+        moved_piece.x = -1000
+        moved_piece.y = -1000
+        self.no_promotion += 1
+  
+      elif new_piece == "Bishop" or new_piece == "bishop" or new_piece == "B" or new_piece == "b":
+  
+        self.BBISHOP_PROMOTE_PIECES[self.no_promotion].x = new_x
+        self.BBISHOP_PROMOTE_PIECES[self.no_promotion].y = new_y
+        self.B_BISHOP.append(self.BBISHOP_PROMOTE_PIECES[self.no_promotion])
+        self.BISHOP.append(self.BBISHOP_PROMOTE_PIECES[self.no_promotion])
+        self.BPIECE_LIST.append(self.BBISHOP_PROMOTE_PIECES[self.no_promotion])
+        self.PIECE_LIST.append(self.BBISHOP_PROMOTE_PIECES[self.no_promotion])
+        moved_piece.x = -1000
+        moved_piece.y = -1000
+        self.no_promotion += 1
+  
+      elif new_piece == "Rook" or new_piece == "rook" or new_piece == "R" or new_piece == "r":
+  
+        self.BROOK_PROMOTE_PIECES[self.no_promotion].x = new_x
+        self.BROOK_PROMOTE_PIECES[self.no_promotion].y = new_y
+        self.B_ROOK.append(self.BROOK_PROMOTE_PIECES[self.no_promotion])
+        self.ROOK.append(self.BROOK_PROMOTE_PIECES[self.no_promotion])
+        self.BPIECE_LIST.append(self.BROOK_PROMOTE_PIECES[self.no_promotion])
+        self.PIECE_LIST.append(self.BROOK_PROMOTE_PIECES[self.no_promotion])
+        moved_piece.x = -1000
+        moved_piece.y = -1000
+        self.no_promotion += 1
+
+
 #the board is created
 b1 = Board()
 
@@ -918,6 +1079,9 @@ while not running:
                 if i in b1.PAWN:
                   if coords in b1.pawn_poss_moves(i):
                     b1.check_legal_and_move(i, round_x, round_y)
+                  if (i.y == 0 and i.color == "white") or (i.y == 525 and i.color == "black"):
+                    new_piece = input("\nWhat would you like to promote your pawn to? (Queen, Rook, Knight, Bishop): ")
+                    b1.promotion(i, round_x, round_y, new_piece)
                     
                 """
                 checks if the object that needs to be moved is a rook, if moving it to the 
@@ -1044,6 +1208,9 @@ while not running:
                           b1.color = "black"
                         else:
                           b1.color == "black"
+
+                
+                  
 
                   
                         
